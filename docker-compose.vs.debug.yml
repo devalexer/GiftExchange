@@ -1,0 +1,13 @@
+version: '2.1'
+
+services:
+  giftexchange:
+    image: giftexchange:dev
+    build:
+      args:
+        source: ${DOCKER_BUILD_SOURCE}
+    volumes:
+      - .\GiftExchange:C:\inetpub\wwwroot
+      - ~\msvsmon:C:\msvsmon:ro
+    labels:
+      - "com.microsoft.visualstudio.targetoperatingsystem=windows"

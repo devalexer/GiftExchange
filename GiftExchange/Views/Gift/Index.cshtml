@@ -1,0 +1,15 @@
+﻿@model IEnumerable<GiftExchange.Models.Gift>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>List of gifts:</h2>
+
+<ul>
+    @foreach (var gift in Model)
+    {
+        <li>@gift.Contents</li>
+    }
+</ul>
+

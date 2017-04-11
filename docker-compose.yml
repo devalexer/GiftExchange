@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  giftexchange:
+    image: giftexchange
+    build:
+      context: .\GiftExchange
+      dockerfile: Dockerfile
