@@ -41,7 +41,7 @@ namespace GiftExchange.Services
         }
 
         //Gets Individual Gift by Id number
-        public List<Gift> GetAllGifts(int id)
+        public List<Gift> GetGift(int id)
         {
             var rv = new List<Gift>();
             using (var connection = new SqlConnection(ConnectionString))
@@ -71,8 +71,9 @@ namespace GiftExchange.Services
 
 
         //Creates New Gift And Adds It To Pile
-        public void CreateGift(Gift gift)
+        public static Gift CreateGift(Gift gift)
         {
+//            Gift gift;
             using (var connection = new SqlConnection(ConnectionString))
             {
                 var query = @"INSERT INTO Gift 
@@ -81,7 +82,6 @@ namespace GiftExchange.Services
                             VALUES (@Contents, @GiftHint, @ColorWrappingPaper, @Height, @Width, @Depth, @Weight)";
 
                 var cmd = new SqlCommand(query, connection);
-                connection.Open();
 
                 cmd.Parameters.AddWithValue("@Contents", gift.Contents);
                 cmd.Parameters.AddWithValue("@GiftHint", gift.GiftHint);
@@ -92,29 +92,33 @@ namespace GiftExchange.Services
                 cmd.Parameters.AddWithValue("@Weight", gift.Weight);
                 cmd.Parameters.AddWithValue("@IsOpened", false);
 
+                connection.Open();
                 var newId = cmd.ExecuteScalar();
                 gift.Id = (int)newId;
                 connection.Close();
             }
-            return Ok(gift);
+            return gift;
         }
 
 
         //Updates Existing gift In Catalog
-        public void Updategift(int id, Gift gift)
+        public static Gift UpdateGift(int id, Gift gift)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var query = @"UPDATE [dbo].[Gifts] 
-                            SET [Title] = @Title,
-                            [Author] = @Author,
-                            [YearPublished] = @YearPublished,
-                            [Genre] = @Genre                  
-                            WHERE Id = @Id";
+                var query = @"UPDATE Gifts 
+                            VALUES Contents = @Contents,
+                            GiftHint = @GiftHint,
+                            ColorWrappingPaper = @ColorWrappingPaper,
+                            Height = @Height,
+                            Width = @Width,
+                            Weight = @Weight,
+                            Depth = @Depth,
+                            IsOpened = @IsOpened
+                            WHERE @Id = Id";
 
                 var cmd = new SqlCommand(query, connection);
-                connection.Open();
-
+                
                 cmd.Parameters.AddWithValue("@Contents", gift.Contents);
                 cmd.Parameters.AddWithValue("@GiftHint", gift.GiftHint);
                 cmd.Parameters.AddWithValue("@ColorWrappingPaper", gift.ColorWrappingPaper);
@@ -124,26 +128,61 @@ namespace GiftExchange.Services
                 cmd.Parameters.AddWithValue("@Weight", gift.Weight);
                 cmd.Parameters.AddWithValue("@IsOpened", gift.IsOpened);
 
-                var reader = cmd.ExecuteNonQuery();
+                connection.Open();
+                cmd.ExecuteNonQuery();
                 connection.Close();
             }
-            return Ok($"Gift with Id {id} has been updated to {gift.Contents}");
+            return gift;
         }
 
 
         //Deletes gift From Catalog
-        public IHttpActionResult DeleteGift(int id)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                var query = $@"DELETE FROM Gifts WHERE Id = {id}";
-                var cmd = new SqlCommand(query, connection);
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                connection.Close();
+        //       public static Gift DeleteGift(int id)
+        //       {
+        //           using (var connection = new SqlConnection(ConnectionString))
+        //           {
+        //               var query = $@"DELETE FROM Gifts WHERE Id = {id}";
+        //               var cmd = new SqlCommand(query, connection);
+        //               connection.Open();
+        //               cmd.ExecuteNonQuery();
+        //               connection.Close();
 
-                return Ok($"gift with Id {id} has been deleted from the catalog");
-            }
-        }
+        //           }
+        //           return gift;
+        //       }
+
+        //Opens Gift from Catalog
+        //public static void OpenGift(int id)
+        //{
+        //    using (var connection = new SqlConnection(ConnectionString))
+        //    {
+        //        var query = @"UPDATE Gifts 
+        //                    VALUES Contents = @Contents,
+        //                    GiftHint = @GiftHint,
+        //                    ColorWrappingPaper = @ColorWrappingPaper,
+        //                    Height = @Height,
+        //                    Width = @Width,
+        //                    Weight = @Weight,
+        //                    Depth = @Depth,
+        //                    IsOpened = @IsOpened
+        //                    WHERE @Id = Id";
+
+        //        var cmd = new SqlCommand(query, connection);
+
+        //        cmd.Parameters.AddWithValue("@Contents", gift.Contents);
+        //        cmd.Parameters.AddWithValue("@GiftHint", gift.GiftHint);
+        //        cmd.Parameters.AddWithValue("@ColorWrappingPaper", gift.ColorWrappingPaper);
+        //        cmd.Parameters.AddWithValue("@Height", gift.Height);
+        //        cmd.Parameters.AddWithValue("@Width", gift.Width);
+        //        cmd.Parameters.AddWithValue("@Depth", gift.Depth);
+        //        cmd.Parameters.AddWithValue("@Weight", gift.Weight);
+        //        cmd.Parameters.AddWithValue("@IsOpened", gift.IsOpened);
+
+        //        connection.Open();
+        //        cmd.ExecuteNonQuery();
+        //        connection.Close();
+        //    }
+        //    return gift;
+        //}
     }
 }
