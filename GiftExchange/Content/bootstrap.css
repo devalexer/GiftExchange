@@ -2599,7 +2599,7 @@ input[type="button"].btn-block {
   content: "\e042";
 }
 
-.glyphicon-book:before {
+.glyphicon-gift:before {
   content: "\e043";
 }
 
@@ -3199,7 +3199,7 @@ input[type="button"].btn-block {
   content: "\1f514";
 }
 
-.glyphicon-bookmark:before {
+.glyphicon-giftmark:before {
   content: "\1f516";
 }
 

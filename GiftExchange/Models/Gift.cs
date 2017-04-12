@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
@@ -18,6 +19,20 @@ namespace GiftExchange.Models
         public bool? IsOpened { get; set; }
 
         public Gift() { }
+
+        public Gift(SqlDataReader reader)
+        {
+            this.Id = (int)reader["Id"];
+            this.Contents = reader["Contents"].ToString();
+            this.GiftHint = reader["GiftHint"].ToString();
+            this.ColorWrappingPaper = reader["ColorWrappingPaper"].ToString();
+            this.Height = reader["Height"] as int?;
+            this.Width = reader["Width"] as int?;
+            this.Depth = reader["Depth"] as int?;
+            this.Weight = reader["Weight"] as int?;
+            this.IsOpened = reader["IsOpened"] as bool?;
+
+        }
 
 
     }

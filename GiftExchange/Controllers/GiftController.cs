@@ -19,6 +19,11 @@ namespace GiftExchange.Controllers
             return View(gift);
         }
 
-       
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
     }
 }

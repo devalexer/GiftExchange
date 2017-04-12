@@ -25,14 +25,14 @@ namespace GiftExchange.Services
                 {
                     rv.Add(new Gift
                     {
-                        Contents = (string)reader["Contents"],
-                        GiftHint = (string)reader["GiftHint"],
-                        ColorWrappingPaper = (string)reader["ColorWrappingPaper"],
-                        Height = (double?)reader["Height"],
-                        Width = (double?)reader["Width"],
-                        Depth = (double?)reader["Depth"],
-                        Weight = (double?)reader["Weight"],
-                        IsOpened = (bool?)reader["IsOpened"],
+                        Contents = reader["Contents"].ToString(),
+                        GiftHint = reader["GiftHint"].ToString(),
+                        ColorWrappingPaper = reader["ColorWrappingPaper"].ToString(),
+                        Height = reader["Height"] as double?,
+                        Width =  reader["Width"] as double?,
+                        Depth =  reader["Depth"] as double?,
+                        Weight =  reader["Weight"] as double?,
+                        IsOpened = reader["IsOpened"] as bool?,
                     });
                 }
                 connection.Close();
@@ -40,91 +40,110 @@ namespace GiftExchange.Services
             return rv;
         }
 
-        ////Gets Individual Book by Id number
-        //public IEnumerable<GiftService> GetGift(int id)
-        //{
-        //    var rv = new List<GiftService>();
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        var query = $@"SELECT * FROM GiftTable WHERE Id={id}";
-        //        var cmd = new SqlCommand(query, connection);
-        //        connection.Open();
-        //        var reader = cmd.ExecuteReader();
-        //        while (reader.Read())
-        //        {
-        //            rv.Add(new Gift
-        //            {
-        //                Id = (int)reader["Id"],
-        //                Contents = reader["Contents"].ToString,
-        //                GiftHint = reader["GiftHint"].ToString,
-        //                ColorWrappingPaper = reader["ColorWrappingPaper"].ToString,
-        //                Height = (double)reader["Height"],
-        //                Width = (double)reader["Width"],
-        //                Depth = (double)reader["Depth"],
-        //                Weight = (double)reader["Weight"],
-        //                IsOpened = (bool)reader["IsOpened"],
-        //            });
-        //        }
-        //        connection.Close();
-        //    }
-        //    return rv;
-        //}
+        //Gets Individual Gift by Id number
+        public List<Gift> GetAllGifts(int id)
+        {
+            var rv = new List<Gift>();
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = $@"SELECT * FROM GiftTable WHERE Id={id}";
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    rv.Add(new Gift
+                    {
+                        Contents = reader["Contents"].ToString(),
+                        GiftHint = reader["GiftHint"].ToString(),
+                        ColorWrappingPaper = reader["ColorWrappingPaper"].ToString(),
+                        Height = reader["Height"] as double?,
+                        Width = reader["Width"] as double?,
+                        Depth = reader["Depth"] as double?,
+                        Weight = reader["Weight"] as double?,
+                        IsOpened = reader["IsOpened"] as bool?,
+                    });
+                }
+                connection.Close();
+            }
+            return rv;
+        }
 
-        ////Creates New Book And Adds It To Catalog
-        //public IHttpActionResult CreateBook([FromBody]GiftService book)
-        //{
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        var query = @"INSERT INTO[dbo].[Gift] ([Contents],[GiftHint],[ColorWrappingPaper],[Height],[Width],[Depth],[Weight])
-        //                      OUTPUT INSERTED.Id                          
-        //                      VALUES (@Contents, @GiftHint, @ColorWrappingPaper, @Height, @Width, @Depth, @Weight)";
-        //        var cmd = new SqlCommand(query, connection);
-        //        connection.Open();
-        //        cmd.Parameters.AddWithValue("@Contents", gift.Contents);
-        //        cmd.Parameters.AddWithValue("@Author", book.Author);
-        //        cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
-        //        cmd.Parameters.AddWithValue("@Genre", book.Genre);
-        //        var newId = cmd.ExecuteScalar();
-        //        book.Id = (int)newId;
-        //        connection.Close();
-        //    }
-        //    return Ok(book);
-        //}
 
-        ////Updates Existing Book In Catalog
-        //public IHttpActionResult UpdateBook([FromUri]int id, [FromBody] GiftService book)
-        //{
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        var query = @"UPDATE [dbo].[Books] 
-        //                    SET [Title] = @Title,[Author] = @Author,[YearPublished] = @YearPublished,[Genre] = @Genre                  
-        //                    WHERE Id = @Id";
-        //        var cmd = new SqlCommand(query, connection);
-        //        connection.Open();
-        //        cmd.Parameters.AddWithValue("@Id", book.Id);
-        //        cmd.Parameters.AddWithValue("@Title", book.Title);
-        //        cmd.Parameters.AddWithValue("@Author", book.Author);
-        //        cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
-        //        cmd.Parameters.AddWithValue("@Genre", book.Genre);
-        //        var reader = cmd.ExecuteNonQuery();
-        //        connection.Close();
-        //    }
-        //    return Ok($"Book with Id {id} has been updated to {book.Title}");
-        //}
+        //Creates New Gift And Adds It To Pile
+        public void CreateGift(Gift gift)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = @"INSERT INTO Gift 
+                            ([Contents],[GiftHint],[ColorWrappingPaper],[Height],[Width],[Depth],[Weight])
+                            OUTPUT INSERTED.Id                          
+                            VALUES (@Contents, @GiftHint, @ColorWrappingPaper, @Height, @Width, @Depth, @Weight)";
 
-        ////Deletes Book From Catalog
-        //public IHttpActionResult DeleteBook(int id)
-        //{
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        var query = $@"DELETE FROM[dbo].[Books] WHERE Id = {id}";
-        //        var cmd = new SqlCommand(query, connection);
-        //        connection.Open();
-        //        cmd.ExecuteNonQuery();
-        //        connection.Close();
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
 
-        //        return Ok($"Book with Id {id} has been deleted from the catalog");
-        //    }
-        //}
+                cmd.Parameters.AddWithValue("@Contents", gift.Contents);
+                cmd.Parameters.AddWithValue("@GiftHint", gift.GiftHint);
+                cmd.Parameters.AddWithValue("@ColorWrappingPaper", gift.ColorWrappingPaper);
+                cmd.Parameters.AddWithValue("@Height", gift.Height);
+                cmd.Parameters.AddWithValue("@Width", gift.Width);
+                cmd.Parameters.AddWithValue("@Depth", gift.Depth);
+                cmd.Parameters.AddWithValue("@Weight", gift.Weight);
+                cmd.Parameters.AddWithValue("@IsOpened", false);
+
+                var newId = cmd.ExecuteScalar();
+                gift.Id = (int)newId;
+                connection.Close();
+            }
+            return Ok(gift);
+        }
+
+
+        //Updates Existing gift In Catalog
+        public void Updategift(int id, Gift gift)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = @"UPDATE [dbo].[Gifts] 
+                            SET [Title] = @Title,
+                            [Author] = @Author,
+                            [YearPublished] = @YearPublished,
+                            [Genre] = @Genre                  
+                            WHERE Id = @Id";
+
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+
+                cmd.Parameters.AddWithValue("@Contents", gift.Contents);
+                cmd.Parameters.AddWithValue("@GiftHint", gift.GiftHint);
+                cmd.Parameters.AddWithValue("@ColorWrappingPaper", gift.ColorWrappingPaper);
+                cmd.Parameters.AddWithValue("@Height", gift.Height);
+                cmd.Parameters.AddWithValue("@Width", gift.Width);
+                cmd.Parameters.AddWithValue("@Depth", gift.Depth);
+                cmd.Parameters.AddWithValue("@Weight", gift.Weight);
+                cmd.Parameters.AddWithValue("@IsOpened", gift.IsOpened);
+
+                var reader = cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            return Ok($"Gift with Id {id} has been updated to {gift.Contents}");
+        }
+
+
+        //Deletes gift From Catalog
+        public IHttpActionResult DeleteGift(int id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = $@"DELETE FROM Gifts WHERE Id = {id}";
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+
+                return Ok($"gift with Id {id} has been deleted from the catalog");
+            }
+        }
     }
 }
