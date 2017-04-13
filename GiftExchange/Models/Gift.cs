@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace GiftExchange.Models
 {
@@ -26,16 +27,38 @@ namespace GiftExchange.Models
             this.Contents = reader["Contents"].ToString();
             this.GiftHint = reader["GiftHint"].ToString();
             this.ColorWrappingPaper = reader["ColorWrappingPaper"].ToString();
-            var test = reader["Height"];
-            var testAsDouble = test as double?;
-            var testAsInt = test as int?;
-            var testAsString = double.Parse(test.ToString());
-            this.Height = testAsString;
-            this.Width = reader["Width"] as int?;
-            this.Depth = reader["Depth"] as int?;
-            this.Weight = reader["Weight"] as int?;
+            this.Height = double.Parse(reader["Height"].ToString()); 
+            this.Width = double.Parse(reader["Width"].ToString());
+            this.Depth = double.Parse(reader["Depth"].ToString()); 
+            this.Weight = double.Parse(reader["Weight"].ToString());
             this.IsOpened = reader["IsOpened"] as bool?;
+        }
 
+        //Constructor that holds the data coming from the forms
+        public Gift(FormCollection collection, int id = 0)
+        {
+            if (id > 0)
+            {
+                this.Id = id;
+            }
+            else
+            {
+                int _id;
+                int.TryParse(collection["Id"], out _id);
+                if (_id > 0)
+                {
+                    this.Id = _id;
+                }
+            }
+            //this.Id = int.Parse(collection["Id"]);
+            this.Contents = collection["Contents"];
+            this.GiftHint = collection["GiftHint"];
+            this.ColorWrappingPaper = collection["ColorWrappingPaper"];
+            this.Height = double.Parse(collection["Height"]);
+            this.Width = double.Parse(collection["Width"]);
+            this.Depth = double.Parse(collection["Depth"]);
+            this.Weight = double.Parse(collection["Weight"]);
+            this.IsOpened = bool.Parse(collection["IsOpened"]);
         }
 
 

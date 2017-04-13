@@ -43,32 +43,19 @@ namespace GiftExchange.Services
                 while (reader.Read())
                 {
                     gift = new Gift(reader);
-                    //rv.Add(new Gift
-                    //{
-                    //    Contents = reader["Contents"].ToString(),
-                    //    GiftHint = reader["GiftHint"].ToString(),
-                    //    ColorWrappingPaper = reader["ColorWrappingPaper"].ToString(),
-                    //    Height = reader["Height"] as double?,
-                    //    Width = reader["Width"] as double?,
-                    //    Depth = reader["Depth"] as double?,
-                    //    Weight = reader["Weight"] as double?,
-                    //    IsOpened = reader["IsOpened"] as bool?,
-                    //});
                 }
                 connection.Close();
             }
             return gift;
         }
-
-
+        
         //Creates New Gift And Adds It To Pile
-        public static Gift CreateGift(Gift gift)
+        public void CreateGift(Gift gift)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
                 var query = @"INSERT INTO Gift 
-                            ([Contents],[GiftHint],[ColorWrappingPaper],[Height],[Width],[Depth],[Weight])
-                            OUTPUT INSERTED.Id                          
+                            ([Contents],[GiftHint],[ColorWrappingPaper],[Height],[Width],[Depth],[Weight])                         
                             VALUES (@Contents, @GiftHint, @ColorWrappingPaper, @Height, @Width, @Depth, @Weight)";
 
                 var cmd = new SqlCommand(query, connection);
@@ -83,16 +70,15 @@ namespace GiftExchange.Services
                 cmd.Parameters.AddWithValue("@IsOpened", false);
 
                 connection.Open();
-                var newId = cmd.ExecuteScalar();
-                gift.Id = (int)newId;
+                cmd.ExecuteNonQuery();
+                //var newId = cmd.ExecuteScalar();
+                //gift.Id = (int)newId;
                 connection.Close();
             }
-            return gift;
         }
 
-
-        //Updates Existing Gift In Catalog
-        public static Gift UpdateGift(int id, Gift gift)
+        //Edits/Updates Existing Gift In Catalog
+        public static Gift EditGift(int id, Gift gift)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -124,8 +110,7 @@ namespace GiftExchange.Services
             }
             return gift;
         }
-
-
+        
         //Deletes gift From Catalog
         public static Gift DeleteGift(int id)
         {
@@ -142,21 +127,21 @@ namespace GiftExchange.Services
             return gift;
         }
 
-        ////Opens Gift from Catalog
-        //public static void OpenGift(int id)
-        //{
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        var query = @"UPDATE Gifts (IsOpened = @IsOpened) WHERE @Id = Id";
-        //        var cmd = new SqlCommand(query, connection);
+        //Opens Gift from Catalog
+        public static void OpenGift(int id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = @"UPDATE Gifts (IsOpened = @IsOpened) WHERE @Id = Id";
+                var cmd = new SqlCommand(query, connection);
 
-        //        cmd.Parameters.AddWithValue("@IsOpened", true);
+                cmd.Parameters.AddWithValue("@IsOpened", true);
+                cmd.Parameters.AddWithValue("@Id", id);
 
-        //        connection.Open();
-        //        cmd.ExecuteNonQuery();
-        //        connection.Close();
-        //    }
-        //    return gift;
-        //}
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
     }
 }
